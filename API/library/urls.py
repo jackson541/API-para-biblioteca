@@ -10,10 +10,10 @@ urlpatterns = [
         path('delete/<str:code>', views.bookDelete)
     ])),
 
-    #path('/loans/', include([
-    #    path('/', views.loanList),
-    #    path('create/', views.loanCreate),
-    #    path('edit/<int:id>', views.loanEdit),
-    #    path('delete/<int:id>', views.loanDelete)
-    #]))'''
+    path('loans/', include([
+        path('', views.loanList),
+        path('create', views.loanCreate),
+        path('edit/<int:id>', views.loanEdit),
+        path('delete/<int:id>', views.loanDelete)
+    ]))
 ]

@@ -13,7 +13,7 @@ class Book (models.Model):
     amount_available = models.IntegerField()
 
 class Loan (models.Model):
-    code_book = models.ForeignKey(Book, on_delete = models.CASCADE)
+    code_book = models.ForeignKey('Book', on_delete = models.CASCADE)
     user = models.CharField(max_length = 100)
     loan_date = models.DateField(default = timezone.now())
     devolution_date = models.DateField()
