@@ -24,11 +24,24 @@ def verifyLoanId(id):
 
     return True
 
+
+
 # Book code
+
+
 
 def bookList(request):
     books = list(Book.objects.all().values())
     return JsonResponse(books, safe = False)
+
+
+
+def bookView(request, code):
+    if request.method == "GET" and verifyCode(code):
+        book = list(Book.objects.filter(pk = code).values())
+        return JsonResponse(book, safe=False)
+    
+    return JsonResponse({})
 
 
 
@@ -90,15 +103,6 @@ def bookDelete(request, code):
 
 
 
-def bookView(request, code):
-    if request.method == "GET" and verifyCode(code):
-        book = list(Book.objects.filter(pk = code).values())
-        return JsonResponse(book, safe=False)
-    
-    return JsonResponse({})
-
-
-
 def bookLoans(request, code):
     if request.method == "GET" and verifyCode(code):
         loans = list(Loan.objects.filter(code_book = code).values())
@@ -114,6 +118,14 @@ def bookLoans(request, code):
 def loanList (request):
     loans = list(Loan.objects.all().values())
     return JsonResponse(loans, safe = False)
+
+
+
+def loanView (request, id):
+    if request.method == "GET" and verifyLoanId(id):
+        loan = list(Loan.objects.filter(pk=id).values())
+
+        return JsonResponse(loan, safe=False)
 
 
 
