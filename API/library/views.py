@@ -89,6 +89,25 @@ def bookDelete(request, code):
     return JsonResponse({})
 
 
+
+def bookView(request, code):
+    if request.method == "GET" and verifyCode(code):
+        book = list(Book.objects.filter(pk = code).values())
+        return JsonResponse(book, safe=False)
+    
+    return JsonResponse({})
+
+
+
+def bookLoans(request, code):
+    if request.method == "GET" and verifyCode(code):
+        loans = list(Loan.objects.filter(code_book = code).values())
+        return JsonResponse(loans, safe=False)
+
+    return JsonResponse({})
+
+
+
 # Loan Code
 
 
@@ -105,7 +124,7 @@ def loanCreate (request):
 
         fields = ['code_book', 'user', 'loan_date', 'devolution_date']
 
-        
+        #verificando se todos os campos foram passados
         for field in fields:
             try:
                 body[field]
@@ -120,12 +139,11 @@ def loanCreate (request):
                 "error": "o livro com código " + body['code_book'] + " não está registrado no banco de dados"
             })
 
+
         counter = Loan.objects.filter(code_book = body['code_book']).count()
         book = Book.objects.get(pk = body['code_book'])
 
-
         if counter == book.amount_available:
-           
             return JsonResponse({
                 "error": "todos os livros com esse código já foram emprestados"
             })
@@ -166,6 +184,7 @@ def loanEdit (request, id):
                     "error": "todos os livros com esse código já foram emprestados"
                 })
 
+        #alterando todos os campos que foram passados no body
         for field in body:
             setattr(loan, field, body[field])
 
