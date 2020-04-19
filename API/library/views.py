@@ -45,7 +45,10 @@ def bookCreate(request):
             except:
                 return JsonResponse({"erro":'campo ' + field + ' nao fornecido'}, safe=False)
         
-
+        if verifyCode(body['code']):
+            return JsonResponse({
+                "error": "código do livro já está cadastrado"
+            })
         
         book = Book(
             code = body['code'],
@@ -114,11 +117,21 @@ def loanCreate (request):
 
         if not(verifyCode(body['code_book'])):
             return JsonResponse({
-                "error": "o código " + body['code_book'] + " não está registrado no banco de dados"
+                "error": "o livro com código " + body['code_book'] + " não está registrado no banco de dados"
             })
 
+        counter = Loan.objects.filter(code_book = body['code_book']).count()
         book = Book.objects.get(pk = body['code_book'])
 
+
+        if counter == book.amount_available:
+           
+            return JsonResponse({
+                "error": "todos os livros com esse código já foram emprestados"
+            })
+
+
+       
         loan = Loan(
             code_book = book,
             user = body['user'],
@@ -143,6 +156,14 @@ def loanEdit (request, id):
             if not(verifyCode(body['code_book'])):
                 return JsonResponse({
                     "error": "o código " + body['code_book'] + " não está registrado no banco de dados"
+                })
+
+            counter = Loan.objects.filter(code_book = body['code_book']).count()
+            book = Book.objects.get(pk = body['code_book'])
+
+            if counter == book.amount_available:
+                return JsonResponse({
+                    "error": "todos os livros com esse código já foram emprestados"
                 })
 
         for field in body:
