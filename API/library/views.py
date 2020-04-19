@@ -112,6 +112,11 @@ def loanCreate (request):
                     "error": "campo " + field + " nao foi informado"
                 })
 
+        if not(verifyCode(body['code_book'])):
+            return JsonResponse({
+                "error": "o código " + body['code_book'] + " não está registrado no banco de dados"
+            })
+
         book = Book.objects.get(pk = body['code_book'])
 
         loan = Loan(
@@ -133,6 +138,12 @@ def loanEdit (request, id):
         body = json.loads(body_unicode)
 
         loan = Loan.objects.get(pk=id)
+        
+        if 'code_book' in body:
+            if not(verifyCode(body['code_book'])):
+                return JsonResponse({
+                    "error": "o código " + body['code_book'] + " não está registrado no banco de dados"
+                })
 
         for field in body:
             setattr(loan, field, body[field])
