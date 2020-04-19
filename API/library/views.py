@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils import timezone
+from datetime import datetime
 from library.models import Book, Loan
 import json
     
@@ -191,10 +192,14 @@ def loanEdit (request, id):
             counter = Loan.objects.filter(code_book = body['code_book']).count()
             book = Book.objects.get(pk = body['code_book'])
 
-            if counter == book.amount_available:
+            if counter == book.amount_available and loan.code_book != book:
                 return JsonResponse({
                     "error": "todos os livros com esse código já foram emprestados"
                 })
+
+            #define o valor o livro e remove o campo do body para não dar conflito no for
+            loan.code_book = book
+            del body['code_book']
 
         #alterando todos os campos que foram passados no body
         for field in body:
@@ -212,3 +217,41 @@ def loanDelete (request, id):
         loan.delete()
     
     return JsonResponse({})
+
+
+
+# searches
+
+
+
+def searchBookTitle (request, title):
+    if request.method == "GET":
+        books = list(Book.objects.filter(title=title).values())
+
+        return JsonResponse(books, safe=False)
+
+
+
+def searchBookAuthor (request, author):
+    if request.method == "GET":
+        books = list(Book.objects.filter(author=author).values())
+
+        return JsonResponse(books, safe=False)
+
+
+#o date_launch deve ser passado no formato de data
+#exemplo: 2019-01-01
+def searchBookLaunch (request, date_launch):
+    if request.method == "GET":
+        try:
+            #verifica se o formato da data passado é válido
+            datetime.strptime(date_launch, "%Y-%m-%d")
+
+            books = list(Book.objects.filter(date_launch=date_launch).values())
+
+            return JsonResponse(books, safe=False)
+
+        except:
+            return JsonResponse({
+                "error": "formato da data inválido. ex: 2000-10-01"
+            })

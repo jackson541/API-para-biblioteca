@@ -18,5 +18,11 @@ urlpatterns = [
         path('create', views.loanCreate),
         path('edit/<int:id>', views.loanEdit),
         path('delete/<int:id>', views.loanDelete)
+    ])),
+
+    path('search/book/', include([
+        path('title/<str:title>', views.searchBookTitle),
+        path('author/<str:author>', views.searchBookAuthor),
+        path('launch/<str:date_launch>', views.searchBookLaunch)
     ]))
 ]
