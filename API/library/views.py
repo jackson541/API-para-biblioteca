@@ -221,6 +221,8 @@ def searchBookTitle (request, title):
 
         return JsonResponse(books, safe=False)
 
+    return JsonResponse({})
+
 
 
 def searchBookAuthor (request, author):
@@ -228,6 +230,8 @@ def searchBookAuthor (request, author):
         books = list(Book.objects.filter(author=author).values())
 
         return JsonResponse(books, safe=False)
+
+    return JsonResponse({})
 
 
 #o date_launch deve ser passado no formato de data
@@ -247,6 +251,8 @@ def searchBookLaunch (request, date_launch):
                 "error": "formato da data inválido. ex: 2000-10-01"
             })
 
+    return JsonResponse({})
+
 
 
 def searchBookUser (request, user):
@@ -262,3 +268,5 @@ def searchBookUser (request, user):
             books.append(book)
         
         return JsonResponse(books, safe=False)
+
+    return JsonResponse({})
