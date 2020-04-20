@@ -9,21 +9,10 @@ import json
 # Middlewares
 
 def verifyCode(code):
-    value = list(Book.objects.filter(code = code).values())
-
-    if(value == []):
-        return False
-
-    return True
-
+    return Book.objects.filter(code = code).exists()
 
 def verifyLoanId(id):
-    value = list(Loan.objects.filter(pk = id).values())
-
-    if(value == []):
-        return False
-
-    return True
+    return Loan.objects.filter(pk = id).exists()
 
 
 
@@ -127,6 +116,8 @@ def loanView (request, id):
         loan = list(Loan.objects.filter(pk=id).values())
 
         return JsonResponse(loan, safe=False)
+
+    return JsonResponse({})
 
 
 
@@ -255,3 +246,19 @@ def searchBookLaunch (request, date_launch):
             return JsonResponse({
                 "error": "formato da data inválido. ex: 2000-10-01"
             })
+
+
+
+def searchBookUser (request, user):
+    if request.method == "GET":
+        books = []
+        loans = Loan.objects.filter(user=user)
+
+        for loan in loans:
+            #transforma o objeto em um dicionário e remove a propriedade _state
+            book = loan.code_book.__dict__
+            del book['_state']
+
+            books.append(book)
+        
+        return JsonResponse(books, safe=False)
